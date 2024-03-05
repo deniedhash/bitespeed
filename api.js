@@ -67,6 +67,11 @@ app.use("/", router);
 //   console.log(`API server listening on port ${port}`);
 // });
 
+let options = {
+  key: fs.readFileSync("privkey.pem"), // Replace with your SSL private key file path
+  cert: fs.readFileSync("fullchain.pem"), // Replace with your SSL certificate file path
+};
+
 const server = https.createServer(options, app);
 
 const port = 3001;
