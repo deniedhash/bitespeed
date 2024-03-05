@@ -25,42 +25,39 @@ router.post(
     let num = req.body.phoneNumber;
 
     if (email === null && num === null) {
-      retData = "Both fields cannot be null"
-    }
-
-    else {
-
-    let x = await sql.selectData(num, email);
-    if (x.id === null) {
-      await sql.insertContactData(num, email, null, "primary");
-      let y = await sql.selectSpecData(num, email);
-      retData = {
-        contact: {
-          primaryContatctId: y[0].id,
-          emails: [email],
-          phoneNumbers: [num],
-          secondaryContactIds: [],
-        },
-      };
+      retData = "Both fields cannot be null";
     } else {
-      await sql.updateContactData(num, email, x.id);
-      let yEmail = await sql.checkEmail(email)
-      let yNum = await sql.checkNum(num)
-       if (yEmail.length === 0 || yNum.length === 0) {
-        await sql.insertContactData(num, email, x.id, "secondary");
-      }
+      let x = await sql.selectData(num, email);
+      if (x.id === null) {
+        await sql.insertContactData(num, email, null, "primary");
+        let y = await sql.selectSpecData(num, email);
+        retData = {
+          contact: {
+            primaryContatctId: y[0].id,
+            emails: [email],
+            phoneNumbers: [num],
+            secondaryContactIds: [],
+          },
+        };
+      } else {
+        await sql.updateContactData(num, email, x.id);
+        let yEmail = await sql.checkEmail(email);
+        let yNum = await sql.checkNum(num);
+        if (yEmail.length === 0 || yNum.length === 0) {
+          await sql.insertContactData(num, email, x.id, "secondary");
+        }
 
-      let z = await sql.selectData(num, email);
-      retData = {
-        contact: {
-          primaryContatctId: z.id,
-          emails: z.emails,
-          phoneNumbers: z.nums,
-          secondaryContactIds: z.ids,
-        },
-      };
+        let z = await sql.selectData(num, email);
+        retData = {
+          contact: {
+            primaryContatctId: z.id,
+            emails: z.emails,
+            phoneNumbers: z.nums,
+            secondaryContactIds: z.ids,
+          },
+        };
+      }
     }
-  }
     // await sequelize.close()
     res.status(200).send(retData);
   }

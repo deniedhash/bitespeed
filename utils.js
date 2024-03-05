@@ -18,12 +18,12 @@ async function selectData(num, email) {
         nums.push(x[i].phoneNumber);
         ids.push(x[i].id);
       }
-      emails = emails.filter((value, index, self) => {
+      (emails = emails.filter((value, index, self) => {
+        return self.indexOf(value) === index;
+      })),
+        (nums = nums.filter((value, index, self) => {
           return self.indexOf(value) === index;
-        }),
-        nums = nums.filter((value, index, self) => {
-          return self.indexOf(value) === index;
-        });
+        }));
       ids.shift();
       ids = ids.filter((value, index, self) => {
         return self.indexOf(value) === index;
@@ -77,8 +77,6 @@ async function insertContactData(num, email, linkedId, precedence) {
       INSERT INTO Contact (id, phoneNumber, email, linkedId, linkPrecedence, createdAt, updatedAt, deletedAt)
       VALUES (${idNum}, '${num}', '${email}', ${linkedId}, '${precedence}', UTC_TIMESTAMP(), UTC_TIMESTAMP(), NULL)
     `);
-
-
   } catch (error) {
     console.error("Error inserting data:", error);
   }
@@ -100,5 +98,5 @@ module.exports = {
   selectSpecData,
   updateContactData,
   checkNum,
-  checkEmail
+  checkEmail,
 };
