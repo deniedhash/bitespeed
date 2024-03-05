@@ -1,5 +1,5 @@
 const express = require("express");
-const { body, check } = require("express-validator");
+const { body } = require("express-validator");
 const https = require("https");
 const sql = require("./utils");
 
@@ -62,7 +62,14 @@ router.post(
 
 app.use("/", router);
 
+// const port = 3001;
+// app.listen(port, () => {
+//   console.log(`API server listening on port ${port}`);
+// });
+
+const server = https.createServer(options, app);
+
 const port = 3001;
-app.listen(port, () => {
-  console.log(`API server listening on port ${port}`);
+server.listen(port, () => {
+  console.log(`API server listening on port ${port} with HTTPS`);
 });

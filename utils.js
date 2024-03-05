@@ -20,12 +20,13 @@ async function selectData(num, email) {
         nums.push(x[i].phoneNumber);
         ids.push(x[i].id);
       }
-      emails = emails.filter((value, index, self) => {
-        return self.indexOf(value) === index;
-      });
-      nums = nums.filter((value, index, self) => {
-        return self.indexOf(value) === index;
-      });
+      emails,
+        (nums = emails.filter((value, index, self) => {
+          return self.indexOf(value) === index;
+        })),
+        nums.filter((value, index, self) => {
+          return self.indexOf(value) === index;
+        });
       ids.shift();
       ids = ids.filter((value, index, self) => {
         return self.indexOf(value) === index;
@@ -55,7 +56,6 @@ async function insertContactData(num, email, linkedId, precedence) {
     let [x] = await sequelize.query(`SELECT * FROM Demo`);
 
     let idNum = x.length + 1 || 1;
-    // Insert first contact
     await sequelize.query(`
       INSERT INTO Demo (id, phoneNumber, email, linkedId, linkPrecedence, createdAt, updatedAt, deletedAt)
       VALUES (${idNum}, '${num}', '${email}', ${linkedId}, '${precedence}', UTC_TIMESTAMP(), UTC_TIMESTAMP(), NULL)
@@ -77,9 +77,6 @@ async function updateContactData(num, email, id) {
   }
 }
 
-// insertContactData("123", "animesh");
-// let x = selectData("1222", "opop")
-// console.log(x)
 module.exports = {
   selectData,
   insertContactData,
