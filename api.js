@@ -1,6 +1,7 @@
 const express = require("express");
 const { body } = require("express-validator");
 const https = require("https");
+const fs = require("fs");
 const sql = require("./utils");
 
 const app = express();
@@ -23,13 +24,16 @@ router.post(
     let email = req.body.email;
     let num = req.body.phoneNumber;
 
+    if (email === null && num === null) {
+      retData = "Both fields cannot be null"
+    }
+
+    else {
+
     let x = await sql.selectData(num, email);
-    console.log(x);
     if (x.id === null) {
       await sql.insertContactData(num, email, null, "primary");
-      console.log("HEHEHE");
       let y = await sql.selectSpecData(num, email);
-      console.log(y);
       retData = {
         contact: {
           primaryContatctId: y[0].id,
@@ -40,8 +44,9 @@ router.post(
       };
     } else {
       await sql.updateContactData(num, email, x.id);
-      let y = await sql.selectSpecData(num, email);
-      if (y.length === 0) {
+      let yEmail = await sql.checkEmail(email)
+      let yNum = await sql.checkNum(num)
+       if (yEmail.length === 0 || yNum.length === 0) {
         await sql.insertContactData(num, email, x.id, "secondary");
       }
 
@@ -55,6 +60,7 @@ router.post(
         },
       };
     }
+  }
     // await sequelize.close()
     res.status(200).send(retData);
   }
@@ -68,8 +74,8 @@ app.use("/", router);
 // });
 
 let options = {
-  key: fs.readFileSync("privkey.pem"), // Replace with your SSL private key file path
-  cert: fs.readFileSync("fullchain.pem"), // Replace with your SSL certificate file path
+  key: fs.readFileSync("/home/opc/ssl_files/privkey.pem"), // Replace with your SSL private key file path
+  cert: fs.readFileSync("/home/opc/ssl_files/fullchain.pem"), // Replace with your SSL certificate file path
 };
 
 const server = https.createServer(options, app);
